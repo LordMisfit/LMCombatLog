@@ -22,3 +22,6 @@ misc/killsndduck DUCK
 misc/killsndohno kn-ohno
 misc/killsndoof rb-oof
 $random misc/killinfight { misc/killsndduck misc/killsndduck misc/killsndduck misc/killsndduck misc/killsndduck misc/killsndduck misc/killsndohno misc/killsndohno misc/killsndohno misc/killsndoof }
+
+Resurrection/EvilBig  DQDANGER
+Resurrection/Evil  EKCG

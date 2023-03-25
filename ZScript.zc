@@ -442,4 +442,26 @@ class LM_EventHandler : EventHandler
 		Super.WorldThingDamaged(e);
 	}
 	
+	override void WorldThingRevived(WorldEvent e)
+	{
+		if (Level.MapName != "TITLEMAP")
+		{
+			actor spawnee = e.thing;
+			string spawnname = spawnee.GetClassName();
+			
+			if (spawnee)
+			{
+				string sndname = "Resurrection/Evil";
+				if (spawnee.bISMONSTER && !spawnee.bFRIENDLY)
+				{
+					sndname = "Resurrection/Evil";
+					if (spawnee.bBOSS) sndname = "Resurrection/EvilBig";
+				}
+				spawnee.A_StopSound(15);
+				spawnee.A_StartSound(sndname,15,CHANF_DEFAULT,frandom(0.8,1.2),ATTN_NONE,frandom(0.8,1.2));
+ 				Console.Printf("\c[red]*\c- \c[purple]%s\c[red] has resurrected!\c-", spawnee.GetTag());
+			}
+		}
+		Super.WorldThingRevived(e);
+	}
 }

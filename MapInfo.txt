@@ -1,0 +1,4 @@
+GameInfo
+{
+	AddEventHandlers = "LM_EventHandler"
+}

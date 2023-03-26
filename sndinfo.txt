@@ -25,3 +25,10 @@ $random misc/killinfight { misc/killsndduck misc/killsndduck misc/killsndduck mi
 
 Resurrection/EvilBig  DQDANGER
 Resurrection/Evil  EKCG
+
+Player/TookNoDamage	      nodmg
+$pitchshift Player/TookNoDamage 0
+$limit Player/TookNoDamage      1
+Player/TookNoDamageInvuln	      protect3
+$pitchshift Player/TookNoDamageInvuln 0
+$limit Player/TookNoDamageInvuln      1

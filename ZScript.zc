@@ -176,7 +176,6 @@ class TempNoHitSound : CustomInventory
 
 class LM_EventHandler : EventHandler
 {
-	
 	override void WorldThingDamaged(WorldEvent e)
 	{
 		if (Level.MapName != "TITLEMAP")
@@ -197,7 +196,7 @@ class LM_EventHandler : EventHandler
 				if (victim) debugmsg.AppendFormat(" %p [%s],", victim, victim.GetClassName());
 				if (source) debugmsg.AppendFormat(" source: %p [%s]", source, source.GetClassName()); else debugmsg.AppendFormat("\c[red] no source\c-");
 				if (inflicter) debugmsg.AppendFormat(" inflicter: %p [%s]", inflicter, inflicter.GetClassName()); else debugmsg.AppendFormat("\c[orange] no inflicter\c-");
-				debugmsg.AppendFormat(", damage: %d, damagetype: %s, flags: %d", dmg, mod, flags);
+				debugmsg.AppendFormat(", damage: %d [%d], damagetype: %s, flags: %d", dmg, initdmg, mod, flags);
 				Console.Printf(debugmsg);
 			}
 			
@@ -209,6 +208,7 @@ class LM_EventHandler : EventHandler
 				if (lmdebug_hitsounds) Console.Printf("hitsounds (victim check)");
 				int oldhealth = victim.health;
 				string victname = victim.GetTag();
+				if (PlayerPawn(victim)) victname = victim.player.GetUserName();
 				string atkrname = "(?)";
 				int user_type;
 				string vict = "NONE";
@@ -219,54 +219,124 @@ class LM_EventHandler : EventHandler
 				if (inflicter) infl = inflicter.GetClassName();
 				if (source) sour = source.GetClassName();
 
-				bool showdmglog;
+				int showdmglog = 0;
 				
-				if (victim.bCOUNTKILL) showdmglog = true;
-				//if (PlayerPawn(victim)) showdmglog = false;
-				if (mod == 'SilentMassacre') showdmglog = false;
+				if (victim.bCOUNTKILL) showdmglog = 1;
+				if (PlayerPawn(victim)) showdmglog = 2;
+				if (mod == 'SilentMassacre') showdmglog = 0;
 				
 				string attkernam;
 				if (!victim.GetTag()) victname = vict;
 				if (source)
 				{
-					if (source.GetTag()) attkernam = source.GetTag();
-													else attkernam = source.GetClassName();
+					if (PlayerPawn(source))
+					{
+						attkernam = source.player.GetUserName();
+					}
+					else
+					{
+						if (source.GetTag()) attkernam = source.GetTag();
+														else attkernam = source.GetClassName();
+					}
 				}
 				if (inflicter)
 				{
-					if (inflicter.GetTag()) atkrname = inflicter.GetTag();
-														 else atkrname = inflicter.GetClassName();
+					if (PlayerPawn(inflicter))
+					{
+						atkrname = inflicter.player.GetUserName();
+					}
+					else
+					{
+						if (inflicter.GetTag()) atkrname = inflicter.GetTag();
+															 else atkrname = inflicter.GetClassName();
+					}
 				}
 				string comblog = "";
-				comblog.AppendFormat("\c[red]*\c- ");
-				showdmglog = false;
-				if (victim.bCOUNTKILL) showdmglog = true;
-				if (PlayerPawn(victim)) showdmglog = false;
-				if (mod == 'SilentMassacre') showdmglog = false;
-				if (lm_combatlog && showdmglog)
+				showdmglog = 0;
+				if (victim.bCOUNTKILL) showdmglog = 1;
+				if (PlayerPawn(victim)) showdmglog = 2;
+				if (mod == 'SilentMassacre') showdmglog = 0;
+				if ((lm_combatlog && showdmglog == 1) || (lm_playerdmglog && showdmglog >= 2))
 				{
-					//Console.Printf("showdmglog 2");
+					if (lmdebug_worlddamaged) Console.Printf("showdmglog 2");
 					if (mod == 'NONE') mod = 'Typeless';
+					
+					if (showdmglog >= 2) comblog.AppendFormat("\c[brick]*\c- ");
+													else comblog.AppendFormat("\c[red]*\c- ");
 					if (dmg)
 					{
-						comblog.AppendFormat("\c[brick]%d\c-", dmg);
-						comblog.AppendFormat(" damage dealt to \c[red]%s\c- by", victname);
-						if (source && !inflicter) comblog.AppendFormat(" \c[purple]%s\c-", attkernam);
-						else if (inflicter && source && (inflicter != source)) comblog.AppendFormat(" \c[purple]%s's\c-", attkernam);
-						if (inflicter) comblog.AppendFormat(" \c[red]%s\c-!", atkrname);
-						comblog.AppendFormat(" [\c[lightblue]%s\c-]", mod);
-						if (flags & DMG_EXPLOSION) comblog.AppendFormat(" \c[brick][AOE]\c-");
+						if (showdmglog >= 2) comblog.AppendFormat("\c[red]%d\c-", dmg);
+														else comblog.AppendFormat("\c[brick]%d\c-", dmg);
+														
+						if (showdmglog >= 2) comblog.AppendFormat("\c[brick]");
+						if (showdmglog >= 2) comblog.AppendFormat(" damage dealt to %s ", victname);
+														else comblog.AppendFormat(" damage dealt to \c[red]%s\c- ", victname);
+						if (showdmglog >= 2) comblog.AppendFormat("\c[brick]");
+						comblog.AppendFormat("by");
+						if (source && !inflicter) 
+						{
+							comblog.AppendFormat(" \c[purple]%s\c-", attkernam);
+						}
+						else 
+						if (inflicter && source && (inflicter != source))
+						{
+							comblog.AppendFormat(" \c[purple]%s's\c-", attkernam);
+						}
+						if (inflicter) 
+						{
+							comblog.AppendFormat(" \c[red]%s", atkrname);
+							if (showdmglog >= 2) comblog.AppendFormat("\c[brick]!");
+															else comblog.AppendFormat("\c-!");
+						}
+						comblog.AppendFormat(" [\c[lightblue]%s", mod);
+						if (showdmglog >= 2) comblog.AppendFormat("\c[brick]]!");
+														else comblog.AppendFormat("\c-]");
+						if (flags & DMG_EXPLOSION) 
+						{
+							if (showdmglog >= 2) comblog.AppendFormat(" \c[red][AOE]\c-");
+															else comblog.AppendFormat(" \c[brick][AOE]\c-");
+						}
 						if (victim.health <= 0) 
 						{
-							comblog.AppendFormat(" \c[brick]%s dies!\c-", victname);
+							if (showdmglog >= 2) comblog.AppendFormat(" \c[brick]%s \c[red]perishes!\c-", victname);
+															else comblog.AppendFormat(" \c[red]%s \c[brick]dies!\c-", victname);
 						}
 					}
 					else
 					{
-						comblog.AppendFormat("\c[red]%s\c- took \c[purple]no damage\c- from", victname);
+						bool isinvuln = false;
+						if (PlayerPawn(victim))
+						{
+							if (victim.bINVULNERABLE || 
+									victim.player.cheats & CF_GODMODE2 ||
+									victim.player.cheats & CF_GODMODE || 
+									victim.CountInv("PowerInvulnerable")) isinvuln = true;
+						}
+						else
+						{
+							if (victim.bINVULNERABLE) isinvuln = true;
+						}
+						if (lmdebug_worlddamaged) Console.Printf("isinvuln: %d", isinvuln);
+						if (isinvuln)
+						{
+							victim.A_StartSound("Player/TookNoDamageInvuln",199,CHANF_DEFAULT,frandom(0.5,0.75),ATTN_NORM);
+							comblog.AppendFormat("\c[red]%s\c- ", victname);
+							comblog.AppendFormat("is currently invulnerable and took \c[purple]no damage\c-");
+							comblog.AppendFormat(" from");
+						}
+						else
+						{
+							if (showdmglog == 1) victim.A_StartSound("misc/hitnodmg",199,CHANF_DEFAULT,frandom(0.5,0.75),ATTN_NORM);
+							if (showdmglog >= 2) victim.A_StartSound("Player/TookNoDamage",199,CHANF_DEFAULT,frandom(0.5,0.75),ATTN_NORM);
+							comblog.AppendFormat("\c[red]%s\c- ", victname);
+							comblog.AppendFormat("took \c[purple]no damage\c-");
+							comblog.AppendFormat(" from");
+						}
 						if (inflicter && source && (inflicter != source)) comblog.AppendFormat(" \c[purple]%s's", attkernam);
 						if (inflicter) comblog.AppendFormat(" \c[red]%s\c-!", atkrname);
-						comblog.AppendFormat(" [\c[lightblue]%s\c-]", mod);
+						comblog.AppendFormat(" [\c[lightblue]%s", mod);
+						if (showdmglog >= 2) comblog.AppendFormat("\c[brick]]!");
+														else comblog.AppendFormat("\c-]");
 					}
 					if (lmdebug_showgametic) comblog.AppendFormat(" [%d]", gametic);
 					
@@ -293,6 +363,7 @@ class LM_EventHandler : EventHandler
 				outputdmgfactor *= moddedDMG;
 				outputdmgfactor /= tempdmgval;
 				bool playwsounds = true;
+				if (PlayerPawn(victim)) playwsounds = false;
 				if (mod == 'SilentMassacre') playwsounds = false;
 				if (lmdebug_hitsounds) Console.Printf("playwsounds: %d", playwsounds);
 				
@@ -358,6 +429,7 @@ class LM_EventHandler : EventHandler
 				}
 				
 				bool playdthsounds = true;
+				if (PlayerPawn(victim)) playdthsounds = false;
 				if (mod == 'SilentMassacre') playdthsounds = false;
 				if (lmdebug_hitsounds) Console.Printf("playdthsounds: %d", playdthsounds);
 				
@@ -472,6 +544,7 @@ class LM_EventHandler : EventHandler
 				}
 				
 				bool playdmgsounds = true;
+				if (PlayerPawn(victim)) playdmgsounds = false;
 				if (mod == 'SilentMassacre') playdmgsounds = false;
 				if (lmdebug_hitsounds) Console.Printf("playdmgsounds: %d", playdmgsounds);
 				

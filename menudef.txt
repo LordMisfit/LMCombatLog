@@ -48,6 +48,9 @@ OptionMenu "LMCOptions"
 	IfGame(Heretic, Hexen) { Position -88 } 
 	IfGame(Strife) { Position -88 }
 	
+	LMOption "Combat Logs [non-player]",		"Outputs damage messages to the console when non-player monsters take damage. Default: On",		"lm_combatlog",			"OnOff_DefaultOn"
+	LMOption "Damage Logs [Player]",		"Outputs damage messages to the console the player takes damage [or is hit while invulnerable]. Default: On",		"lm_playerdmglog",			"OnOff_DefaultOn"
+	StaticText " "
 	LMOption "Hit Sounds [Player]",		"If [Yes], sounds are played when an enemy is damaged by the player or one of their allied monsters, Quake 3 Arena/Quake Champions Style. Default: Yes.",		"lm_q3aqchitsounds",      "YesNo_DefaultYes"
 	LMOption "Kill Sounds [Player]",		"If [Yes], sounds are played when an enemy is killed by the player or one of their allied monsters, Quake 3 Arena/Quake Champions Style. Default: Yes.",		"lm_q3aqckillsounds",      "YesNo_DefaultYes"
 	LMOption "Hit Sounds [Allies]",		"If [Yes], sounds are played when an allied monster is hit by a hostile monster, Quake 3 Arena/Quake Champions Style. Default: Yes.",		"lm_q3aqchitsounds2",      "YesNo_DefaultYes"

@@ -1,4 +1,5 @@
 server nosave int lm_combatlog = 1;
+server nosave int lm_playerdmglog = 1;
 
 server nosave int lm_q3aqchitsounds = 1;
 server nosave int lm_q3aqchitsounds2 = 1;

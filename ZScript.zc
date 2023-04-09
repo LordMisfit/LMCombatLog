@@ -1,6 +1,6 @@
 version "4.10"
 
-class CompatVulnItem : CustomInventory 
+class LMC_CompatVulnItem : CustomInventory 
 {
 	string ownername;
 	string nl, nm, nn, no, np, nq, nr, ns, nt, nu, nv, nw, nx, ny, nz, na, nb, nc, nd, ne, nf, ng, nh, ni, nj, nk;
@@ -206,7 +206,7 @@ class LMMenu : OptionMenu
 	}
 }
 
-class TempNoWeakSound : CustomInventory
+class LMC_TempNoWeakSound : CustomInventory
 {
 	int timer;
 	default
@@ -241,7 +241,7 @@ class TempNoWeakSound : CustomInventory
 }
 
 
-class TempNoHitSound : CustomInventory
+class LMC_TempNoHitSound : CustomInventory
 {
 	int timer;
 	default
@@ -268,359 +268,319 @@ class TempNoHitSound : CustomInventory
 	}
 }
 
+
 class LM_EventHandler : EventHandler
 {
+	bool A_CheckLMMods()
+	{
+		bool IsaLMMod = false;
+		if (Wads.CheckNumForName("DEVUDOSP", Wads.ns_global, -1, true) != -1) IsaLMMod = true;
+		else if (Wads.CheckNumForName("EXPEXP", Wads.ns_global, -1, true) != -1) IsaLMMod = true;
+		else if (Wads.CheckNumForName("KAMPOUL", Wads.ns_global, -1, true) != -1) IsaLMMod = true;
+		return IsaLMMod;
+	}
+	
 	override void WorldThingSpawned(WorldEvent e)
 	{
-		class<Actor> extracheck, extracheck2, extracheck3, extracheck4;
-		string nm, nn, no, np;
-		actor spawnee = e.thing;
-		actor source;
-		actor mastor;
-		source = spawnee.target;
-		mastor = spawnee.master;
-		string spawnname = spawnee.GetClassName();
-		
-		if (spawnee)
+		if (!A_CheckLMMods())
 		{
-			if (PlayerPawn(spawnee) || (spawnee.bISMONSTER || spawnee.bSHOOTABLE))
+			class<Actor> extracheck, extracheck2, extracheck3, extracheck4;
+			string nm, nn, no, np;
+			actor spawnee = e.thing;
+			actor source;
+			actor mastor;
+			source = spawnee.target;
+			mastor = spawnee.master;
+			string spawnname = spawnee.GetClassName();
+			
+			if (spawnee)
 			{
-				//spawnee.A_SetInventory("CompatVulnItem",1);
-				//Console.Printf("CompatVulnItem [%p - %s]", spawnee, spawnee.GetClassName());
+				if (PlayerPawn(spawnee) || (spawnee.bISMONSTER || spawnee.bSHOOTABLE))
+				{
+					//spawnee.A_SetInventory("LMC_CompatVulnItem",1);
+					//Console.Printf("LMC_CompatVulnItem [%p - %s]", spawnee, spawnee.GetClassName());
+				}
 			}
 		}
+		super.WorldThingSpawned(e);
 	}
 	
 	override void WorldThingDamaged(WorldEvent e)
 	{
-		if (Level.MapName != "TITLEMAP")
+		if (!A_CheckLMMods())
 		{
-			if (lmdebug_hitsounds) Console.Printf("hitsounds (WorldThingDamaged check)");
-			actor victim = e.Thing;
-			actor source = e.DamageSource;
-			actor inflicter = e.inflictor;
-			int dmg = e.damage;
-			int initdmg = e.damage;
-			string mod = e.damagetype;
-			int flags = e.DamageFlags;
-
-			if (lmdebug_worlddamaged) 
+			if (Level.MapName != "TITLEMAP")
 			{
-				string debugmsg = "WorldThingDamaged";
-				debugmsg.AppendFormat(" [gametic: %d]:", gametic);
-				if (victim) debugmsg.AppendFormat(" %p [%s],", victim, victim.GetClassName());
-				if (source) debugmsg.AppendFormat(" source: %p [%s]", source, source.GetClassName()); else debugmsg.AppendFormat("\c[red] no source\c-");
-				if (inflicter) debugmsg.AppendFormat(" inflicter: %p [%s]", inflicter, inflicter.GetClassName()); else debugmsg.AppendFormat("\c[orange] no inflicter\c-");
-				debugmsg.AppendFormat(", damage: %d [%d], damagetype: %s, flags: %d", dmg, initdmg, mod, flags);
-				Console.Printf(debugmsg);
-			}
-			
-			class<Actor> extracheck, extracheck2, extracheck3, extracheck4;
-			string nm, nn, no, np;
-			
-			if (victim)
-			{
-				if (lmdebug_hitsounds) Console.Printf("hitsounds (victim check)");
-				int oldhealth = victim.health;
-				string victname = victim.GetTag();
-				if (PlayerPawn(victim)) victname = victim.player.GetUserName();
-				string atkrname = "(?)";
-				int user_type;
-				string vict = "NONE";
-				string infl = "NONE";
-				string sour = "NONE";
+				if (lmdebug_hitsounds) Console.Printf("hitsounds (WorldThingDamaged check)");
+				actor victim = e.Thing;
+				actor source = e.DamageSource;
+				actor inflicter = e.inflictor;
+				int dmg = e.damage;
+				int initdmg = e.damage;
+				string mod = e.damagetype;
+				int flags = e.DamageFlags;
 
-				if (victim) vict = victim.GetClassName();
-				if (inflicter) infl = inflicter.GetClassName();
-				if (source) sour = source.GetClassName();
+				if (lmdebug_worlddamaged) 
+				{
+					string debugmsg = "WorldThingDamaged";
+					debugmsg.AppendFormat(" [gametic: %d]:", gametic);
+					if (victim) debugmsg.AppendFormat(" %p [%s],", victim, victim.GetClassName());
+					if (source) debugmsg.AppendFormat(" source: %p [%s]", source, source.GetClassName()); else debugmsg.AppendFormat("\c[red] no source\c-");
+					if (inflicter) debugmsg.AppendFormat(" inflicter: %p [%s]", inflicter, inflicter.GetClassName()); else debugmsg.AppendFormat("\c[orange] no inflicter\c-");
+					debugmsg.AppendFormat(", damage: %d [%d], damagetype: %s, flags: %d", dmg, initdmg, mod, flags);
+					Console.Printf(debugmsg);
+				}
+				
+				class<Actor> extracheck, extracheck2, extracheck3, extracheck4;
+				string nm, nn, no, np;
+				
+				if (victim)
+				{
+					if (lmdebug_hitsounds) Console.Printf("hitsounds (victim check)");
+					int oldhealth = victim.health;
+					string victname = victim.GetTag();
+					if (PlayerPawn(victim)) victname = victim.player.GetUserName();
+					string atkrname = "(?)";
+					int user_type;
+					string vict = "NONE";
+					string infl = "NONE";
+					string sour = "NONE";
 
-				int showdmglog = 0;
-				
-				if (victim.bCOUNTKILL) showdmglog = 1;
-				if (PlayerPawn(victim)) showdmglog = 2;
-				if (mod == 'SilentMassacre') showdmglog = 0;
-				
-				string attkernam;
-				if (!victim.GetTag()) victname = vict;
-				if (source)
-				{
-					if (PlayerPawn(source))
-					{
-						attkernam = source.player.GetUserName();
-					}
-					else
-					{
-						if (source.GetTag()) attkernam = source.GetTag();
-														else attkernam = source.GetClassName();
-					}
-				}
-				if (inflicter)
-				{
-					if (PlayerPawn(inflicter))
-					{
-						atkrname = inflicter.player.GetUserName();
-					}
-					else
-					{
-						if (inflicter.GetTag()) atkrname = inflicter.GetTag();
-															 else atkrname = inflicter.GetClassName();
-					}
-				}
-				string comblog = "";
-				showdmglog = 0;
-				if (victim.bCOUNTKILL) showdmglog = 1;
-				if (PlayerPawn(victim)) showdmglog = 2;
-				if (mod == 'SilentMassacre') showdmglog = 0;
-				if ((lm_combatlog && showdmglog == 1) || (lm_playerdmglog && showdmglog >= 2))
-				{
-					if (lmdebug_worlddamaged) Console.Printf("showdmglog 2");
-					if (mod == 'NONE') mod = 'Typeless';
+					if (victim) vict = victim.GetClassName();
+					if (inflicter) infl = inflicter.GetClassName();
+					if (source) sour = source.GetClassName();
+
+					int showdmglog = 0;
 					
-					if (showdmglog >= 2) comblog.AppendFormat("\c[brick]*\c- ");
-													else comblog.AppendFormat("\c[red]*\c- ");
-					if (dmg)
+					if (victim.bCOUNTKILL) showdmglog = 1;
+					if (PlayerPawn(victim)) showdmglog = 2;
+					if (mod == 'SilentMassacre') showdmglog = 0;
+					
+					string attkernam;
+					if (!victim.GetTag()) victname = vict;
+					if (source)
 					{
-						if (showdmglog >= 2) comblog.AppendFormat("\c[red]%d\c-", dmg);
-														else comblog.AppendFormat("\c[brick]%d\c-", dmg);
-														
-						if (showdmglog >= 2) comblog.AppendFormat("\c[brick]");
-						if (showdmglog >= 2) comblog.AppendFormat(" damage dealt to %s ", victname);
-														else comblog.AppendFormat(" damage dealt to \c[red]%s\c- ", victname);
-						if (showdmglog >= 2) comblog.AppendFormat("\c[brick]");
-						comblog.AppendFormat("by");
-						if (source && !inflicter) 
+						if (PlayerPawn(source))
 						{
-							comblog.AppendFormat(" \c[purple]%s\c-", attkernam);
-						}
-						else 
-						if (inflicter && source && (inflicter != source))
-						{
-							comblog.AppendFormat(" \c[purple]%s's\c-", attkernam);
-						}
-						if (inflicter) 
-						{
-							comblog.AppendFormat(" \c[red]%s", atkrname);
-							if (showdmglog >= 2) comblog.AppendFormat("\c[brick]!");
-															else comblog.AppendFormat("\c-!");
-						}
-						comblog.AppendFormat(" [\c[lightblue]%s", mod);
-						if (showdmglog >= 2) comblog.AppendFormat("\c[brick]]!");
-														else comblog.AppendFormat("\c-]");
-						if (flags & DMG_EXPLOSION) 
-						{
-							if (showdmglog >= 2) comblog.AppendFormat(" \c[red][AOE]\c-");
-															else comblog.AppendFormat(" \c[brick][AOE]\c-");
-						}
-						if (victim.health <= 0) 
-						{
-							if (showdmglog >= 2) comblog.AppendFormat(" \c[brick]%s \c[red]perishes!\c-", victname);
-															else comblog.AppendFormat(" \c[red]%s \c[brick]dies!\c-", victname);
-						}
-					}
-					else
-					{
-						bool isinvuln = false;
-						if (PlayerPawn(victim))
-						{
-							if (victim.bINVULNERABLE || 
-									victim.player.cheats & CF_GODMODE2 ||
-									victim.player.cheats & CF_GODMODE || 
-									victim.CountInv("PowerInvulnerable")) isinvuln = true;
+							attkernam = source.player.GetUserName();
 						}
 						else
 						{
-							if (victim.bINVULNERABLE) isinvuln = true;
+							if (source.GetTag()) attkernam = source.GetTag();
+															else attkernam = source.GetClassName();
 						}
-						if (lmdebug_worlddamaged) Console.Printf("isinvuln: %d", isinvuln);
-						if (isinvuln)
+					}
+					if (inflicter)
+					{
+						if (PlayerPawn(inflicter))
 						{
-							victim.A_StartSound("Player/TookNoDamageInvuln",199,CHANF_DEFAULT,frandom(0.5,0.75),ATTN_NORM);
-							comblog.AppendFormat("\c[red]%s\c- ", victname);
-							comblog.AppendFormat("is currently invulnerable and took \c[purple]no damage\c-");
-							comblog.AppendFormat(" from");
+							atkrname = inflicter.player.GetUserName();
 						}
 						else
 						{
-							if (showdmglog == 1) victim.A_StartSound("misc/hitnodmg",199,CHANF_DEFAULT,frandom(0.5,0.75),ATTN_NORM);
-							if (showdmglog >= 2) victim.A_StartSound("Player/TookNoDamage",199,CHANF_DEFAULT,frandom(0.5,0.75),ATTN_NORM);
-							comblog.AppendFormat("\c[red]%s\c- ", victname);
-							comblog.AppendFormat("took \c[purple]no damage\c-");
-							comblog.AppendFormat(" from");
-						}
-						if (inflicter && source && (inflicter != source)) comblog.AppendFormat(" \c[purple]%s's", attkernam);
-						if (inflicter) comblog.AppendFormat(" \c[red]%s\c-!", atkrname);
-						comblog.AppendFormat(" [\c[lightblue]%s", mod);
-						if (showdmglog >= 2) comblog.AppendFormat("\c[brick]]!");
-														else comblog.AppendFormat("\c-]");
-					}
-					if (lmdebug_showgametic) comblog.AppendFormat(" [%d]", gametic);
-					
-					Console.Printf(comblog);
-				}
-				
-				if (lmdebug_hitsounds) Console.Printf("hitsounds");
-				bool makesound;
-				string playedsound = "";
-				PlayerPawn playpawn;
-				Actor othermon;
-				int playweaksound = 0;
-				//*******************
-				//* Weakness Sounds *
-				//*******************
-				int tempdmgval = 10000;
-				double tempdmgfactor = victim.damagefactor;
-				victim.damagefactor = 1.0;
-				int moddedDMG = victim.ApplyDamageFactor(mod, tempdmgval);
-				let SpecVuln = CompatVulnItem(victim.FindInventory("CompatVulnItem"));
-				if (SpecVuln) moddedDMG *= SpecVuln.lastTOTALFactor;
-				victim.damagefactor = tempdmgfactor;
-				double outputdmgfactor = 1.0;
-				outputdmgfactor *= moddedDMG;
-				outputdmgfactor /= tempdmgval;
-				bool playwsounds = true;
-				if (PlayerPawn(victim)) playwsounds = false;
-				if (mod == 'SilentMassacre') playwsounds = false;
-				if (lmdebug_hitsounds) Console.Printf("playwsounds: %d", playwsounds);
-				
-				if (playwsounds)
-				{
-					if (initdmg > 0 && !(flags & DMG_NO_FACTOR)) 
-					{
-						if (!(mod == '' || mod == 'Normal' || mod == 'Crush' || mod == 'Falling' || mod == 'Drowning'))
-						{
-							if (moddedDMG <= (tempdmgval * 0.25)) playweaksound = -3;
-							if (moddedDMG >= (tempdmgval * 0.25) && moddedDMG <= (tempdmgval * 0.3999999)) playweaksound = -2;
-							if (moddedDMG >= (tempdmgval * 0.4) && moddedDMG <= (tempdmgval * 0.6666667)) playweaksound = -1;
-							if (moddedDMG >= (tempdmgval * 1.5) && moddedDMG <= (tempdmgval * 2.4999999)) playweaksound = 1;
-							if (moddedDMG >= (tempdmgval * 2.5) && moddedDMG <= (tempdmgval * 3.9999999)) playweaksound = 2;
-							if (moddedDMG >= (tempdmgval * 4.0)) playweaksound = 3;
-							if (lmdebug_hitsounds) Console.Printf("moddedDMG: %d (%.8f) (%s), playweaksound: %d, damagefactor: %.8f", moddedDMG, outputdmgfactor, mod, playweaksound, victim.damagefactor);
+							if (inflicter.GetTag()) atkrname = inflicter.GetTag();
+																 else atkrname = inflicter.GetClassName();
 						}
 					}
-					if (lmdebug_hitsounds) Console.Printf("playweaksound: %d", playweaksound);
-
-					string weakplayedsound = "";
-					if (lm_hitweaksounds && victim.bISMONSTER && playweaksound != 0 && victim.CountInv("TempNoWeakSound") <= 0)
+					string comblog = "";
+					showdmglog = 0;
+					if (victim.bCOUNTKILL) showdmglog = 1;
+					if (PlayerPawn(victim)) showdmglog = 2;
+					if (mod == 'SilentMassacre') showdmglog = 0;
+					if ((lm_combatlog && showdmglog == 1) || (lm_playerdmglog && showdmglog >= 2))
 					{
-						victim.A_SetInventory("TempNoWeakSound",1);
-			
-						if (playweaksound == -3) weakplayedsound = "Misc/ResistanceHitHigh";
-						if (playweaksound == -2) weakplayedsound = "Misc/ResistanceHitMid";
-						if (playweaksound == -1) weakplayedsound = "Misc/ResistanceHit";
-						if (playweaksound == 1) weakplayedsound = "Misc/WeaknessHit";
-						if (playweaksound == 2) weakplayedsound = "Misc/WeaknessHitMid";
-						if (playweaksound == 3) weakplayedsound = "Misc/WeaknessHitHigh";
-			
-						if (initdmg > 0) makesound = true;
-						//if (oldhealth > 0 && oldhealth > health) makesound = true;
-						if (makesound)
+						if (lmdebug_worlddamaged) Console.Printf("showdmglog 2");
+						if (mod == 'NONE') mod = 'Typeless';
+						
+						if (showdmglog >= 2) comblog.AppendFormat("\c[brick]*\c- ");
+														else comblog.AppendFormat("\c[red]*\c- ");
+						if (dmg)
 						{
-							if (source) 
+							if (showdmglog >= 2) comblog.AppendFormat("\c[red]%d\c-", dmg);
+															else comblog.AppendFormat("\c[brick]%d\c-", dmg);
+															
+							if (showdmglog >= 2) comblog.AppendFormat("\c[brick]");
+							if (showdmglog >= 2) comblog.AppendFormat(" damage dealt to %s ", victname);
+															else comblog.AppendFormat(" damage dealt to \c[red]%s\c- ", victname);
+							if (showdmglog >= 2) comblog.AppendFormat("\c[brick]");
+							comblog.AppendFormat("by");
+							if (source && !inflicter) 
 							{
-								if (lmdebug_hitsounds) Console.Printf("[weaksounds] source: %s", source.GetClassName());
-								playpawn = PlayerPawn(source);
+								comblog.AppendFormat(" \c[purple]%s\c-", attkernam);
+							}
+							else 
+							if (inflicter && source && (inflicter != source))
+							{
+								comblog.AppendFormat(" \c[purple]%s's\c-", attkernam);
+							}
+							if (inflicter) 
+							{
+								comblog.AppendFormat(" \c[red]%s", atkrname);
+								if (showdmglog >= 2) comblog.AppendFormat("\c[brick]!");
+																else comblog.AppendFormat("\c-!");
+							}
+							comblog.AppendFormat(" [\c[lightblue]%s", mod);
+							if (showdmglog >= 2) comblog.AppendFormat("\c[brick]]!");
+															else comblog.AppendFormat("\c-]");
+							if (flags & DMG_EXPLOSION) 
+							{
+								if (showdmglog >= 2) comblog.AppendFormat(" \c[red][AOE]\c-");
+																else comblog.AppendFormat(" \c[brick][AOE]\c-");
+							}
+							if (victim.health <= 0) 
+							{
+								if (showdmglog >= 2) comblog.AppendFormat(" \c[brick]%s \c[red]perishes!\c-", victname);
+																else comblog.AppendFormat(" \c[red]%s \c[brick]dies!\c-", victname);
+							}
+						}
+						else
+						{
+							bool isinvuln = false;
+							if (PlayerPawn(victim))
+							{
+								if (victim.bINVULNERABLE || 
+										victim.player.cheats & CF_GODMODE2 ||
+										victim.player.cheats & CF_GODMODE || 
+										victim.CountInv("PowerInvulnerable")) isinvuln = true;
+							}
+							else
+							{
+								if (victim.bINVULNERABLE) isinvuln = true;
+							}
+							if (lmdebug_worlddamaged) Console.Printf("isinvuln: %d", isinvuln);
+							if (isinvuln)
+							{
+								victim.A_StartSound("Player/TookNoDamageInvuln",199,CHANF_DEFAULT,frandom(0.5,0.75),ATTN_NORM);
+								comblog.AppendFormat("\c[red]%s\c- ", victname);
+								comblog.AppendFormat("is currently invulnerable and took \c[purple]no damage\c-");
+								comblog.AppendFormat(" from");
+							}
+							else
+							{
+								if (showdmglog == 1) victim.A_StartSound("misc/hitnodmg",199,CHANF_DEFAULT,frandom(0.5,0.75),ATTN_NORM);
+								if (showdmglog >= 2) victim.A_StartSound("Player/TookNoDamage",199,CHANF_DEFAULT,frandom(0.5,0.75),ATTN_NORM);
+								comblog.AppendFormat("\c[red]%s\c- ", victname);
+								comblog.AppendFormat("took \c[purple]no damage\c-");
+								comblog.AppendFormat(" from");
+							}
+							if (inflicter && source && (inflicter != source)) comblog.AppendFormat(" \c[purple]%s's", attkernam);
+							if (inflicter) comblog.AppendFormat(" \c[red]%s\c-!", atkrname);
+							comblog.AppendFormat(" [\c[lightblue]%s", mod);
+							if (showdmglog >= 2) comblog.AppendFormat("\c[brick]]!");
+															else comblog.AppendFormat("\c-]");
+						}
+						if (lmdebug_showgametic) comblog.AppendFormat(" [%d]", gametic);
+						
+						Console.Printf(comblog);
+					}
+					
+					if (lmdebug_hitsounds) Console.Printf("hitsounds");
+					bool makesound;
+					string playedsound = "";
+					PlayerPawn playpawn;
+					Actor othermon;
+					int playweaksound = 0;
+					//*******************
+					//* Weakness Sounds *
+					//*******************
+					int tempdmgval = 10000;
+					double tempdmgfactor = victim.damagefactor;
+					victim.damagefactor = 1.0;
+					int moddedDMG = victim.ApplyDamageFactor(mod, tempdmgval);
+					let SpecVuln = LMC_CompatVulnItem(victim.FindInventory("LMC_CompatVulnItem"));
+					if (SpecVuln) moddedDMG *= SpecVuln.lastTOTALFactor;
+					victim.damagefactor = tempdmgfactor;
+					double outputdmgfactor = 1.0;
+					outputdmgfactor *= moddedDMG;
+					outputdmgfactor /= tempdmgval;
+					bool playwsounds = true;
+					if (PlayerPawn(victim)) playwsounds = false;
+					if (mod == 'SilentMassacre') playwsounds = false;
+					if (lmdebug_hitsounds) Console.Printf("playwsounds: %d", playwsounds);
+					
+					if (playwsounds)
+					{
+						if (initdmg > 0 && !(flags & DMG_NO_FACTOR)) 
+						{
+							if (!(mod == '' || mod == 'Normal' || mod == 'Crush' || mod == 'Falling' || mod == 'Drowning'))
+							{
+								if (moddedDMG <= (tempdmgval * 0.25)) playweaksound = -3;
+								if (moddedDMG >= (tempdmgval * 0.25) && moddedDMG <= (tempdmgval * 0.3999999)) playweaksound = -2;
+								if (moddedDMG >= (tempdmgval * 0.4) && moddedDMG <= (tempdmgval * 0.6666667)) playweaksound = -1;
+								if (moddedDMG >= (tempdmgval * 1.5) && moddedDMG <= (tempdmgval * 2.4999999)) playweaksound = 1;
+								if (moddedDMG >= (tempdmgval * 2.5) && moddedDMG <= (tempdmgval * 3.9999999)) playweaksound = 2;
+								if (moddedDMG >= (tempdmgval * 4.0)) playweaksound = 3;
+								if (lmdebug_hitsounds) Console.Printf("moddedDMG: %d (%.8f) (%s), playweaksound: %d, damagefactor: %.8f", moddedDMG, outputdmgfactor, mod, playweaksound, victim.damagefactor);
+							}
+						}
+						if (lmdebug_hitsounds) Console.Printf("playweaksound: %d", playweaksound);
+
+						string weakplayedsound = "";
+						if (lm_hitweaksounds && victim.bISMONSTER && playweaksound != 0 && victim.CountInv("LMC_TempNoWeakSound") <= 0)
+						{
+							victim.A_SetInventory("LMC_TempNoWeakSound",1);
+				
+							if (playweaksound == -3) weakplayedsound = "Misc/ResistanceHitHigh";
+							if (playweaksound == -2) weakplayedsound = "Misc/ResistanceHitMid";
+							if (playweaksound == -1) weakplayedsound = "Misc/ResistanceHit";
+							if (playweaksound == 1) weakplayedsound = "Misc/WeaknessHit";
+							if (playweaksound == 2) weakplayedsound = "Misc/WeaknessHitMid";
+							if (playweaksound == 3) weakplayedsound = "Misc/WeaknessHitHigh";
+				
+							if (initdmg > 0) makesound = true;
+							//if (oldhealth > 0 && oldhealth > health) makesound = true;
+							if (makesound)
+							{
+								if (source) 
+								{
+									if (lmdebug_hitsounds) Console.Printf("[weaksounds] source: %s", source.GetClassName());
+									playpawn = PlayerPawn(source);
+									if (victim.bFRIENDLY)
+									{
+										victim.A_StartSound(weakplayedsound, 11, CHANF_DEFAULT, (lm_hitweaksoundvol * frandom(0.75,1.25)), ATTN_NONE, 0.67);
+									}
+									else
+									if (playpawn) 
+									{
+										if (lmdebug_hitsounds) Console.Printf("[weaksounds] playpawn: %s", playpawn.GetClassName());
+										if (!victim.bFRIENDLY) victim.A_StartSound(weakplayedsound, 11, CHANF_DEFAULT, (lm_hitweaksoundvol * frandom(0.75,1.25)), ATTN_NONE, 1.0);
+									}
+									else
+									{
+										othermon = Actor(source);
+										if (othermon) 
+										{
+											if (lmdebug_hitsounds) Console.Printf("[weaksounds] othermon: %s", othermon.GetClassName());
+											if (othermon.bFRIENDLY && !victim.bFRIENDLY) victim.A_StartSound(weakplayedsound, 11, CHANF_DEFAULT, (lm_hitweaksoundvol * frandom(0.75,1.25)), ATTN_NONE, 1.5);
+										}
+									}
+								}
+							}
+						}
+					}
+					
+					bool playdthsounds = true;
+					if (PlayerPawn(victim)) playdthsounds = false;
+					if (mod == 'SilentMassacre') playdthsounds = false;
+					if (lmdebug_hitsounds) Console.Printf("playdthsounds: %d", playdthsounds);
+					
+					if (playdthsounds)
+					{
+						if (victim.health <= 0 && lm_q3aqckillsounds2 && victim.bISMONSTER && victim.bCOUNTKILL)
+						{
+							if (source || inflicter)
+							{
+								if (lmdebug_hitsounds && source) Console.Printf("[deathsound] source: %s", source.GetClassName());
+								if (lmdebug_hitsounds && inflicter) Console.Printf("[deathsound] inflicter: %s", inflicter.GetClassName());
+								if (source) playpawn = PlayerPawn(source);
+								if (playpawn == null && inflicter) playpawn = PlayerPawn(inflicter);
 								if (victim.bFRIENDLY)
 								{
-									victim.A_StartSound(weakplayedsound, 11, CHANF_DEFAULT, (lm_hitweaksoundvol * frandom(0.75,1.25)), ATTN_NONE, 0.67);
-								}
-								else
-								if (playpawn) 
-								{
-									if (lmdebug_hitsounds) Console.Printf("[weaksounds] playpawn: %s", playpawn.GetClassName());
-									if (!victim.bFRIENDLY) victim.A_StartSound(weakplayedsound, 11, CHANF_DEFAULT, (lm_hitweaksoundvol * frandom(0.75,1.25)), ATTN_NONE, 1.0);
-								}
-								else
-								{
-									othermon = Actor(source);
-									if (othermon) 
-									{
-										if (lmdebug_hitsounds) Console.Printf("[weaksounds] othermon: %s", othermon.GetClassName());
-										if (othermon.bFRIENDLY && !victim.bFRIENDLY) victim.A_StartSound(weakplayedsound, 11, CHANF_DEFAULT, (lm_hitweaksoundvol * frandom(0.75,1.25)), ATTN_NONE, 1.5);
-									}
-								}
-							}
-						}
-					}
-				}
-				
-				bool playdthsounds = true;
-				if (PlayerPawn(victim)) playdthsounds = false;
-				if (mod == 'SilentMassacre') playdthsounds = false;
-				if (lmdebug_hitsounds) Console.Printf("playdthsounds: %d", playdthsounds);
-				
-				if (playdthsounds)
-				{
-					if (victim.health <= 0 && lm_q3aqckillsounds2 && victim.bISMONSTER && victim.bCOUNTKILL)
-					{
-						if (source || inflicter)
-						{
-							if (lmdebug_hitsounds && source) Console.Printf("[deathsound] source: %s", source.GetClassName());
-							if (lmdebug_hitsounds && inflicter) Console.Printf("[deathsound] inflicter: %s", inflicter.GetClassName());
-							if (source) playpawn = PlayerPawn(source);
-							if (playpawn == null && inflicter) playpawn = PlayerPawn(inflicter);
-							if (victim.bFRIENDLY)
-							{
-								if (lmdebug_hitsounds) Console.Printf("[deathsound] victim is friendly: %s", victim.GetClassName());
-								/*
-								if (?(victim))
-								{
-									if (lmdebug_hitsounds) Console.Printf("[deathsound] victim is DDAFDNPC Type: %s", victim.GetClassName());
-									playedsound = "misc/whoops";
-									if (lm_q3aqchitsoundtype >= 0) 
-									{
-										victim.A_StopSound(12);
-										victim.A_StartSound(playedsound, 12, CHANF_DEFAULT, (lm_q3aqckillsoundvol * frandom(0.75,1.25)), ATTN_NONE, frandom(0.80,0.888889));
-									}
-								}
-								else
-								{
-								*/
-									if (lm_q3aqckillsoundtype == 0) playedsound = "misc/killsndAlly";
-									if (lm_q3aqckillsoundtype == 1) playedsound = "misc/killsndDEDAlly";
-									if (lm_q3aqckillsoundtype >= 0) 
-									{
-										victim.A_StopSound(12);
-										victim.A_StartSound(playedsound, 12, CHANF_DEFAULT, (lm_q3aqckillsoundvol * frandom(0.75,1.25)), ATTN_NONE);
-									}
-							//}
-							}
-							else
-							if (playpawn) 
-							{
-								if (lmdebug_hitsounds) Console.Printf("[deathsound] playpawn: %s", playpawn.GetClassName());
-								/*
-								if (?(victim))
-								{
-									playedsound = "misc/whoops";
-									if (lm_q3aqchitsoundtype >= 0) 
-									{
-										victim.A_StopSound(12);
-										victim.A_StartSound(playedsound, 12, CHANF_DEFAULT, (lm_q3aqckillsoundvol * frandom(0.75,1.25)), ATTN_NONE, frandom(1.25,1.5));
-									}
-								}
-								else
-								*/
-								if (!victim.bFRIENDLY)
-								{
-									if (lm_q3aqckillsoundtype == 0) playedsound = "misc/killsnd";
-									if (lm_q3aqckillsoundtype == 1) playedsound = "misc/killsndDED";
-									if (lm_q3aqckillsoundtype >= 0) 
-									{
-										victim.A_StopSound(12);
-										victim.A_StartSound(playedsound, 12, CHANF_DEFAULT, (lm_q3aqckillsoundvol * frandom(0.75,1.25)), ATTN_NONE);
-									}
-								}
-							}
-							else
-							{
-								if (source) othermon = Actor(source);
-								if (othermon == null && inflicter) othermon = Actor(inflicter);
-								if (othermon) 
-								{
-									if (lmdebug_hitsounds) Console.Printf("[deathsound] othermon: %s", othermon.GetClassName());
+									if (lmdebug_hitsounds) Console.Printf("[deathsound] victim is friendly: %s", victim.GetClassName());
 									/*
 									if (?(victim))
 									{
+										if (lmdebug_hitsounds) Console.Printf("[deathsound] victim is DDAFDNPC Type: %s", victim.GetClassName());
 										playedsound = "misc/whoops";
 										if (lm_q3aqchitsoundtype >= 0) 
 										{
@@ -629,107 +589,164 @@ class LM_EventHandler : EventHandler
 										}
 									}
 									else
-									*/
-									if (othermon.bFRIENDLY && !victim.bFRIENDLY)
 									{
-										if (lmdebug_hitsounds) Console.Printf("[deathsound] othermon: %s kills %s (ally kills)", othermon.GetClassName(), victim.GetClassName());
-										if (lm_q3aqckillsoundtype == 0) playedsound = "misc/killsnd2";
-										if (lm_q3aqckillsoundtype == 1) playedsound = "misc/killsndDED2";
+									*/
+										if (lm_q3aqckillsoundtype == 0) playedsound = "misc/killsndAlly";
+										if (lm_q3aqckillsoundtype == 1) playedsound = "misc/killsndDEDAlly";
+										if (lm_q3aqckillsoundtype >= 0) 
+										{
+											victim.A_StopSound(12);
+											victim.A_StartSound(playedsound, 12, CHANF_DEFAULT, (lm_q3aqckillsoundvol * frandom(0.75,1.25)), ATTN_NONE);
+										}
+								//}
+								}
+								else
+								if (playpawn) 
+								{
+									if (lmdebug_hitsounds) Console.Printf("[deathsound] playpawn: %s", playpawn.GetClassName());
+									/*
+									if (?(victim))
+									{
+										playedsound = "misc/whoops";
+										if (lm_q3aqchitsoundtype >= 0) 
+										{
+											victim.A_StopSound(12);
+											victim.A_StartSound(playedsound, 12, CHANF_DEFAULT, (lm_q3aqckillsoundvol * frandom(0.75,1.25)), ATTN_NONE, frandom(1.25,1.5));
+										}
+									}
+									else
+									*/
+									if (!victim.bFRIENDLY)
+									{
+										if (lm_q3aqckillsoundtype == 0) playedsound = "misc/killsnd";
+										if (lm_q3aqckillsoundtype == 1) playedsound = "misc/killsndDED";
 										if (lm_q3aqckillsoundtype >= 0) 
 										{
 											victim.A_StopSound(12);
 											victim.A_StartSound(playedsound, 12, CHANF_DEFAULT, (lm_q3aqckillsoundvol * frandom(0.75,1.25)), ATTN_NONE);
 										}
 									}
-									else
-									if (!othermon.bFRIENDLY && !victim.bFRIENDLY && lm_hitsoundsmisc >= 0)
+								}
+								else
+								{
+									if (source) othermon = Actor(source);
+									if (othermon == null && inflicter) othermon = Actor(inflicter);
+									if (othermon) 
 									{
-										double rndpitch = frandom(0.334,1.0);
-										if (random(1,2) <= 1 && rndpitch > 0.00) rndpitch = (1.00 / rndpitch);
+										if (lmdebug_hitsounds) Console.Printf("[deathsound] othermon: %s", othermon.GetClassName());
+										/*
+										if (?(victim))
+										{
+											playedsound = "misc/whoops";
+											if (lm_q3aqchitsoundtype >= 0) 
+											{
+												victim.A_StopSound(12);
+												victim.A_StartSound(playedsound, 12, CHANF_DEFAULT, (lm_q3aqckillsoundvol * frandom(0.75,1.25)), ATTN_NONE, frandom(0.80,0.888889));
+											}
+										}
+										else
+										*/
+										if (othermon.bFRIENDLY && !victim.bFRIENDLY)
+										{
+											if (lmdebug_hitsounds) Console.Printf("[deathsound] othermon: %s kills %s (ally kills)", othermon.GetClassName(), victim.GetClassName());
+											if (lm_q3aqckillsoundtype == 0) playedsound = "misc/killsnd2";
+											if (lm_q3aqckillsoundtype == 1) playedsound = "misc/killsndDED2";
+											if (lm_q3aqckillsoundtype >= 0) 
+											{
+												victim.A_StopSound(12);
+												victim.A_StartSound(playedsound, 12, CHANF_DEFAULT, (lm_q3aqckillsoundvol * frandom(0.75,1.25)), ATTN_NONE);
+											}
+										}
+										else
+										if (!othermon.bFRIENDLY && !victim.bFRIENDLY && lm_hitsoundsmisc >= 0)
+										{
+											double rndpitch = frandom(0.334,1.0);
+											if (random(1,2) <= 1 && rndpitch > 0.00) rndpitch = (1.00 / rndpitch);
 
-										playedsound = "misc/killinfight"; //"misc/killsndduck";
-										if (lmdebug_hitsounds) Console.Printf("[deathsound ('%s': %.8f)] othermon: %s kills %s (full infighting)", playedsound, rndpitch, othermon.GetClassName(), victim.GetClassName());
-										victim.A_StopSound(12);
-										victim.A_StartSound(playedsound, 12, CHANF_DEFAULT, (lm_q3aqckillsoundvol * frandompick(1.5,2.5)), ATTN_NONE, rndpitch);
+											playedsound = "misc/killinfight"; //"misc/killsndduck";
+											if (lmdebug_hitsounds) Console.Printf("[deathsound ('%s': %.8f)] othermon: %s kills %s (full infighting)", playedsound, rndpitch, othermon.GetClassName(), victim.GetClassName());
+											victim.A_StopSound(12);
+											victim.A_StartSound(playedsound, 12, CHANF_DEFAULT, (lm_q3aqckillsoundvol * frandompick(1.5,2.5)), ATTN_NONE, rndpitch);
+										}
 									}
 								}
 							}
 						}
 					}
-				}
-				
-				bool playdmgsounds = true;
-				if (PlayerPawn(victim)) playdmgsounds = false;
-				if (mod == 'SilentMassacre') playdmgsounds = false;
-				if (lmdebug_hitsounds) Console.Printf("playdmgsounds: %d", playdmgsounds);
-				
-				if (playdmgsounds)
-				{
-					if (lm_q3aqchitsounds2 && 
-							victim.bISMONSTER && 
-							victim.bCOUNTKILL && 
-							victim.CountInv("TempNoHitSound") <= 0)
+					
+					bool playdmgsounds = true;
+					if (PlayerPawn(victim)) playdmgsounds = false;
+					if (mod == 'SilentMassacre') playdmgsounds = false;
+					if (lmdebug_hitsounds) Console.Printf("playdmgsounds: %d", playdmgsounds);
+					
+					if (playdmgsounds)
 					{
-						victim.A_SetInventory("TempNoHitSound",1);
-						
-						if (source || inflicter) 
+						if (lm_q3aqchitsounds2 && 
+								victim.bISMONSTER && 
+								victim.bCOUNTKILL && 
+								victim.CountInv("LMC_TempNoHitSound") <= 0)
 						{
-							if (lmdebug_hitsounds && source) Console.Printf("[hitsound] source: %s", source.GetClassName());
-							if (lmdebug_hitsounds && inflicter) Console.Printf("[hitsound] inflicter: %s", inflicter.GetClassName());
-							if (source) playpawn = PlayerPawn(source);
-							if (playpawn == null && inflicter) playpawn = PlayerPawn(inflicter);
-							if (victim.bFRIENDLY)
+							victim.A_SetInventory("LMC_TempNoHitSound",1);
+							
+							if (source || inflicter) 
 							{
-								if (lm_q3aqchitsoundtype == 0) playedsound = "misc/hitally";
-								if (lm_q3aqchitsoundtype == 1) playedsound = "misc/hitpally";
-								if (lm_q3aqchitsoundtype >= 0) 
+								if (lmdebug_hitsounds && source) Console.Printf("[hitsound] source: %s", source.GetClassName());
+								if (lmdebug_hitsounds && inflicter) Console.Printf("[hitsound] inflicter: %s", inflicter.GetClassName());
+								if (source) playpawn = PlayerPawn(source);
+								if (playpawn == null && inflicter) playpawn = PlayerPawn(inflicter);
+								if (victim.bFRIENDLY)
 								{
-									victim.A_StopSound(13);
-									victim.A_StartSound(playedsound, 13, CHANF_DEFAULT, (lm_q3aqchitsoundvol * frandom(0.75,1.25)), ATTN_NONE);
-								}
-							}
-							else
-							if (playpawn) 
-							{
-								if (lmdebug_hitsounds) Console.Printf("[hitsound] playpawn: %s", playpawn.GetClassName());
-								if (!victim.bFRIENDLY)
-								{
-									if (lm_q3aqchitsoundtype == 0) playedsound = "misc/hit";
-									if (lm_q3aqchitsoundtype == 1) playedsound = "misc/hitpunch";
+									if (lm_q3aqchitsoundtype == 0) playedsound = "misc/hitally";
+									if (lm_q3aqchitsoundtype == 1) playedsound = "misc/hitpally";
 									if (lm_q3aqchitsoundtype >= 0) 
 									{
 										victim.A_StopSound(13);
 										victim.A_StartSound(playedsound, 13, CHANF_DEFAULT, (lm_q3aqchitsoundvol * frandom(0.75,1.25)), ATTN_NONE);
 									}
 								}
-							}
-							else
-							{
-								if (source) othermon = Actor(source);
-								if (othermon == null && inflicter) othermon = Actor(inflicter);
-								if (othermon) 
+								else
+								if (playpawn) 
 								{
-									if (lmdebug_hitsounds) Console.Printf("[hitsound] othermon: %s", othermon.GetClassName());
-									if (othermon.bFRIENDLY && !victim.bFRIENDLY)
+									if (lmdebug_hitsounds) Console.Printf("[hitsound] playpawn: %s", playpawn.GetClassName());
+									if (!victim.bFRIENDLY)
 									{
-										if (lm_q3aqchitsoundtype == 0) playedsound = "misc/hit2";
-										if (lm_q3aqchitsoundtype == 1) playedsound = "misc/hitpunch2";
+										if (lm_q3aqchitsoundtype == 0) playedsound = "misc/hit";
+										if (lm_q3aqchitsoundtype == 1) playedsound = "misc/hitpunch";
 										if (lm_q3aqchitsoundtype >= 0) 
 										{
 											victim.A_StopSound(13);
 											victim.A_StartSound(playedsound, 13, CHANF_DEFAULT, (lm_q3aqchitsoundvol * frandom(0.75,1.25)), ATTN_NONE);
 										}
 									}
-									else
-									if (!othermon.bFRIENDLY && !victim.bFRIENDLY && lm_hitsoundsmisc >= 0)
+								}
+								else
+								{
+									if (source) othermon = Actor(source);
+									if (othermon == null && inflicter) othermon = Actor(inflicter);
+									if (othermon) 
 									{
-										double rndpitch = frandom(0.50,1.00);
-										if (random(1,2) <= 1 && rndpitch > 0.00) rndpitch = (1.00 / rndpitch);
+										if (lmdebug_hitsounds) Console.Printf("[hitsound] othermon: %s", othermon.GetClassName());
+										if (othermon.bFRIENDLY && !victim.bFRIENDLY)
+										{
+											if (lm_q3aqchitsoundtype == 0) playedsound = "misc/hit2";
+											if (lm_q3aqchitsoundtype == 1) playedsound = "misc/hitpunch2";
+											if (lm_q3aqchitsoundtype >= 0) 
+											{
+												victim.A_StopSound(13);
+												victim.A_StartSound(playedsound, 13, CHANF_DEFAULT, (lm_q3aqchitsoundvol * frandom(0.75,1.25)), ATTN_NONE);
+											}
+										}
+										else
+										if (!othermon.bFRIENDLY && !victim.bFRIENDLY && lm_hitsoundsmisc >= 0)
+										{
+											double rndpitch = frandom(0.50,1.00);
+											if (random(1,2) <= 1 && rndpitch > 0.00) rndpitch = (1.00 / rndpitch);
 
-										if (random(1,2) <= 1) playedsound = "misc/hitmine2";
-																		 else playedsound = "misc/hitmine";
-										victim.A_StopSound(13);
-										victim.A_StartSound(playedsound, 13, CHANF_DEFAULT, (lm_hitsoundsvol * frandompick(0.75,1.25)), ATTN_NONE, rndpitch);
+											if (random(1,2) <= 1) playedsound = "misc/hitmine2";
+																			 else playedsound = "misc/hitmine";
+											victim.A_StopSound(13);
+											victim.A_StartSound(playedsound, 13, CHANF_DEFAULT, (lm_hitsoundsvol * frandompick(0.75,1.25)), ATTN_NONE, rndpitch);
+										}
 									}
 								}
 							}
@@ -737,31 +754,42 @@ class LM_EventHandler : EventHandler
 					}
 				}
 			}
-			
 		}
 		Super.WorldThingDamaged(e);
 	}
 	
 	override void WorldThingRevived(WorldEvent e)
 	{
-		if (Level.MapName != "TITLEMAP")
+		if (!A_CheckLMMods())
 		{
-			actor spawnee = e.thing;
-			string spawnname = spawnee.GetClassName();
-			
-			if (spawnee)
+			if (Level.MapName != "TITLEMAP")
 			{
-				string sndname = "Resurrection/Evil";
-				if (spawnee.bISMONSTER && !spawnee.bFRIENDLY)
+				actor spawnee = e.thing;
+				string spawnname = spawnee.GetClassName();
+				
+				if (spawnee)
 				{
-					sndname = "Resurrection/Evil";
-					if (spawnee.bBOSS) sndname = "Resurrection/EvilBig";
+					string sndname = "Resurrection/Evil";
+					if (spawnee.bISMONSTER && !spawnee.bFRIENDLY)
+					{
+						sndname = "Resurrection/Evil";
+						if (spawnee.bBOSS) sndname = "Resurrection/EvilBig";
+					}
+					spawnee.A_StopSound(15);
+					spawnee.A_StartSound(sndname,15,CHANF_DEFAULT,frandom(0.8,1.2),ATTN_NONE,frandom(0.8,1.2));
+					Console.Printf("\c[red]*\c- \c[purple]%s\c[red] has resurrected!\c-", spawnee.GetTag());
 				}
-				spawnee.A_StopSound(15);
-				spawnee.A_StartSound(sndname,15,CHANF_DEFAULT,frandom(0.8,1.2),ATTN_NONE,frandom(0.8,1.2));
- 				Console.Printf("\c[red]*\c- \c[purple]%s\c[red] has resurrected!\c-", spawnee.GetTag());
 			}
+			Super.WorldThingRevived(e);
 		}
-		Super.WorldThingRevived(e);
+	}
+
+	override void WorldLoaded(WorldEvent e)
+	{
+		if (!A_CheckLMMods())
+		{
+			if (lmdebug_checksumprintout) Console.Printf("\cyMapCheckSum:\cx %s", level.GetChecksum());
+		}
+		Super.WorldLoaded(e);
 	}
 }

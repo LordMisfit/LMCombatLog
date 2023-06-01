@@ -1,0 +1,61 @@
+class LMC_TempNoWeakSound : CustomInventory
+{
+	int timer;
+	default
+	{
+		inventory.icon "";
+		Inventory.MaxAmount 1;
+		-INVENTORY.KEEPDEPLETED
+		+NOTIMEFREEZE;
+	}
+	
+	States
+	{
+		Use:
+			TNT1 A 0;
+			Stop;
+	}
+	
+	override void Tick()
+	{
+		if (owner)
+		{
+			if (timer < lm_q3aqchitsounddelay) 
+			{
+				timer++;
+			}
+			else Destroy();
+		}
+		if (Owner == NULL) Destroy();
+		
+		Super.Tick();
+	}
+}
+
+
+class LMC_TempNoHitSound : CustomInventory
+{
+	int timer;
+	default
+	{
+		inventory.icon "";
+		Inventory.MaxAmount 1;
+		-INVENTORY.KEEPDEPLETED
+		+NOTIMEFREEZE;
+	}
+	
+	override void Tick()
+	{
+		if (owner)
+		{
+			if (timer < lm_q3aqchitsounddelay) 
+			{
+				timer++;
+			}
+			else Destroy();
+		}
+		if (Owner == NULL) Destroy();
+		
+		Super.Tick();
+	}
+}

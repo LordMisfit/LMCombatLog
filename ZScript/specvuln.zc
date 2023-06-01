@@ -1,0 +1,93 @@
+class LMC_CompatVulnItem : CustomInventory 
+{
+	string ownername;
+	string nl, nm, nn, no, np, nq, nr, ns, nt, nu, nv, nw, nx, ny, nz, na, nb, nc, nd, ne, nf, ng, nh, ni, nj, nk;
+	bool found;
+	double lastTOTALFactor;
+	
+	default
+	{
+		inventory.icon "";
+		Inventory.MaxAmount 1;
+		+INVENTORY.KEEPDEPLETED 
+	}
+	
+	//*************************************
+	actor prevtarget;
+	actor prevmaster;
+	actor prevtracer;
+	state prevstate;
+	override void Tick()
+	{
+		super.Tick();
+		
+		prevtarget = null;
+		if (owner) 
+		{
+			if (owner.target) prevtarget = owner.target;
+			if (owner.tracer) prevtracer = owner.tracer;
+			if (owner.master) prevmaster = owner.master;
+		}
+	}
+	
+	override int DamageMobj(Actor inflictor, Actor source, int damage, Name mod, int flags, double angle)
+	{
+		let ret = super.DamageMobj(inflictor, source, damage, mod, flags, angle);
+		return ret;
+	}
+	
+	override void ModifyDamage(int damage, Name damageType, out int newdamage, bool passive, Actor inflictor, Actor source, int flags)
+	{
+		//Console.Printf("ModifyDamage");
+		if (owner)
+		{
+			if (PlayerPawn(owner) || (owner.bISMONSTER || owner.bSHOOTABLE)) { } else Destroy();
+			
+			lastTOTALFactor = 1.00;
+			if (passive) // If the owner [usually the player] of the item is the DEFENDER
+			{
+				//Console.Printf("passive");
+				if (damage > 0)
+				{
+					//Console.Printf("damage");
+					double TOTALFactor = 1.00;
+					newdamage = max(0, ApplyDamageFactors(GetClass(), damageType, damage, damage * TOTALFactor));
+					lastTOTALFactor = TOTALFactor;
+				}
+				else
+				{
+					//Console.Printf("no damage");
+					bool isinvuln = false;
+					if (PlayerPawn(owner))
+					{
+						if (owner.bINVULNERABLE || 
+								owner.player.cheats & CF_GODMODE2 ||
+								owner.player.cheats & CF_GODMODE || 
+								owner.CountInv("PowerInvulnerable")) isinvuln = true;
+					}
+					else
+					{
+						if (owner.bINVULNERABLE) isinvuln = true;
+					}
+					if (isinvuln)
+					{
+						owner.A_StartSound("Player/TookNoDamageInvuln",199,CHANF_DEFAULT,frandom(0.5,0.75),ATTN_NORM);
+					}
+					else
+					{
+						if (PlayerPawn(owner)) owner.A_StartSound("Player/TookNoDamage",199,CHANF_DEFAULT,frandom(0.5,0.75),ATTN_NORM);
+															else owner.A_StartSound("misc/hitnodmg",199,CHANF_DEFAULT,frandom(0.5,0.75),ATTN_NORM);
+					}
+				}
+			}
+			
+		}
+	}
+	
+	States
+	{
+		Use:
+			TNT1 A 0;
+			Stop;
+	}
+}

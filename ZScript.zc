@@ -1,6 +1,6 @@
 version "4.10"
 
-#include "zscript/specvuln.zc"
-#include "zscript/menus.zc"
-#include "zscript/effects.zc"
-#include "zscript/events.zc"
+#include "zscript/LMC-specvuln.zc"
+#include "zscript/LMC-menus.zc"
+#include "zscript/LMC-effects.zc"
+#include "zscript/LMC-events.zc"

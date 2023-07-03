@@ -295,7 +295,10 @@ class LM_EventHandler : EventHandler
 					
 					if (playdthsounds)
 					{
-						if (victim.health <= 0 && lm_q3aqckillsounds2 && victim.bISMONSTER && victim.bCOUNTKILL)
+						if (lm_q3aqckillsounds && 
+								victim.health <= 0 && 
+								victim.bISMONSTER && 
+								victim.bCOUNTKILL)
 						{
 							if (source || inflicter)
 							{
@@ -410,7 +413,7 @@ class LM_EventHandler : EventHandler
 					
 					if (playdmgsounds)
 					{
-						if (lm_q3aqchitsounds2 && 
+						if (lm_q3aqchitsounds && 
 								victim.bISMONSTER && 
 								victim.bCOUNTKILL && 
 								victim.CountInv("LMC_TempNoHitSound") <= 0)

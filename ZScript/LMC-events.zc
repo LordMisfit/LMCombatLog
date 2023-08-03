@@ -81,7 +81,7 @@ class LM_EventHandler : EventHandler
 
 					int showdmglog = 0;
 					
-					if (victim.bCOUNTKILL) showdmglog = 1;
+					if (victim.bCOUNTKILL || victim.bISMONSTER) showdmglog = 1;
 					if (PlayerPawn(victim)) showdmglog = 2;
 					if (mod == 'SilentMassacre') showdmglog = 0;
 					
@@ -113,7 +113,7 @@ class LM_EventHandler : EventHandler
 					}
 					string comblog = "";
 					showdmglog = 0;
-					if (victim.bCOUNTKILL) showdmglog = 1;
+					if (victim.bCOUNTKILL || victim.bISMONSTER) showdmglog = 1;
 					if (PlayerPawn(victim)) showdmglog = 2;
 					if (mod == 'SilentMassacre') showdmglog = 0;
 					if ((lm_combatlog && showdmglog == 1) || (lm_playerdmglog && showdmglog >= 2))
@@ -231,7 +231,10 @@ class LM_EventHandler : EventHandler
 					{
 						if (initdmg > 0 && !(flags & DMG_NO_FACTOR)) 
 						{
-							if (!(mod == '' || mod == 'Normal' || mod == 'Crush' || mod == 'Falling' || mod == 'Drowning'))
+							if (!(mod == 'Normal' || 
+										mod == 'Crush' || 
+										mod == 'Falling' || 
+										mod == 'Drowning'))
 							{
 								if (moddedDMG <= (tempdmgval * 0.25)) playweaksound = -3;
 								if (moddedDMG >= (tempdmgval * 0.25) && moddedDMG <= (tempdmgval * 0.3999999)) playweaksound = -2;
@@ -297,8 +300,8 @@ class LM_EventHandler : EventHandler
 					{
 						if (lm_q3aqckillsounds && 
 								victim.health <= 0 && 
-								victim.bISMONSTER && 
-								victim.bCOUNTKILL)
+								(victim.bISMONSTER || 
+								victim.bCOUNTKILL))
 						{
 							if (source || inflicter)
 							{
@@ -414,8 +417,8 @@ class LM_EventHandler : EventHandler
 					if (playdmgsounds)
 					{
 						if (lm_q3aqchitsounds && 
-								victim.bISMONSTER && 
-								victim.bCOUNTKILL && 
+								(victim.bISMONSTER || 
+								victim.bCOUNTKILL) && 
 								victim.CountInv("LMC_TempNoHitSound") <= 0)
 						{
 							victim.A_SetInventory("LMC_TempNoHitSound",1);

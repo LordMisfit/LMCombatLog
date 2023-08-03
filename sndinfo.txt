@@ -32,3 +32,11 @@ $limit Player/TookNoDamage      1
 Player/TookNoDamageInvuln	      protect3
 $pitchshift Player/TookNoDamageInvuln 0
 $limit Player/TookNoDamageInvuln      1
+
+// Weakness/Resistance Hit Sounds
+misc/WeaknessHit MELEE-WH
+misc/WeaknessHitMid MELEE-MH
+misc/WeaknessHitHigh MELEE-HH
+misc/ResistanceHit PARRY
+misc/ResistanceHitMid PARRY2
+misc/ResistanceHitHigh PARRY3

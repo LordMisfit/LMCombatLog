@@ -38,7 +38,7 @@ class LMC_CompatVulnItem : CustomInventory
 	
 	override void ModifyDamage(int damage, Name damageType, out int newdamage, bool passive, Actor inflictor, Actor source, int flags)
 	{
-		//Console.Printf("ModifyDamage");
+		if (lmdebug_set1) Console.Printf("ModifyDamage");
 		if (owner)
 		{
 			if (PlayerPawn(owner) || (owner.bISMONSTER || owner.bSHOOTABLE)) { } else Destroy();
@@ -46,17 +46,17 @@ class LMC_CompatVulnItem : CustomInventory
 			lastTOTALFactor = 1.00;
 			if (passive) // If the owner [usually the player] of the item is the DEFENDER
 			{
-				//Console.Printf("passive");
+				if (lmdebug_set1) Console.Printf("passive");
 				if (damage > 0)
 				{
-					//Console.Printf("damage");
+					if (lmdebug_set1) Console.Printf("damage");
 					double TOTALFactor = 1.00;
 					newdamage = max(0, ApplyDamageFactors(GetClass(), damageType, damage, damage * TOTALFactor));
 					lastTOTALFactor = TOTALFactor;
 				}
 				else
 				{
-					//Console.Printf("no damage");
+					if (lmdebug_set1) Console.Printf("no damage");
 					bool isinvuln = false;
 					if (PlayerPawn(owner))
 					{

@@ -23,3 +23,4 @@ server nosave int lmdebug_hitsounds = 0;
 server nosave int lmdebug_showgametic = 0;
 server nosave int lmdebug_menutooltipdisplays = 0;
 server nosave int lmdebug_checksumprintout = 0;
+server nosave int lmdebug_set1 = 0;

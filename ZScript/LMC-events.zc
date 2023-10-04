@@ -6,6 +6,11 @@ class LM_EventHandler : EventHandler
 		if (Wads.CheckNumForName("DEVUDOSP", Wads.ns_global, -1, true) != -1) IsaLMMod = true;
 		else if (Wads.CheckNumForName("EXPEXP", Wads.ns_global, -1, true) != -1) IsaLMMod = true;
 		else if (Wads.CheckNumForName("KAMPOUL", Wads.ns_global, -1, true) != -1) IsaLMMod = true;
+		
+		if (!IsaLMMod)
+		{
+			if (!lm_enabledisableall) IsaLMMod = true;
+		}
 		return IsaLMMod;
 	}
 	
@@ -248,7 +253,7 @@ class LM_EventHandler : EventHandler
 						if (lmdebug_hitsounds) Console.Printf("playweaksound: %d", playweaksound);
 
 						string weakplayedsound = "";
-						if (lm_hitweaksounds && victim.bISMONSTER && playweaksound != 0 && victim.CountInv("LMC_TempNoWeakSound") <= 0)
+						if (victim.bISMONSTER && playweaksound != 0 && victim.CountInv("LMC_TempNoWeakSound") <= 0)
 						{
 							victim.A_SetInventory("LMC_TempNoWeakSound",1);
 				
@@ -355,6 +360,7 @@ class LM_EventHandler : EventHandler
 									{
 										if (lm_q3aqckillsoundtype == 0) playedsound = "misc/killsnd";
 										if (lm_q3aqckillsoundtype == 1) playedsound = "misc/killsndDED";
+										if (lm_q3aqckillsoundtype == 2) playedsound = "misc/EBFoeDie";
 										if (lm_q3aqckillsoundtype >= 0) 
 										{
 											victim.A_StopSound(12);
@@ -386,6 +392,7 @@ class LM_EventHandler : EventHandler
 											if (lmdebug_hitsounds) Console.Printf("[deathsound] othermon: %s kills %s (ally kills)", othermon.GetClassName(), victim.GetClassName());
 											if (lm_q3aqckillsoundtype == 0) playedsound = "misc/killsnd2";
 											if (lm_q3aqckillsoundtype == 1) playedsound = "misc/killsndDED2";
+											if (lm_q3aqckillsoundtype == 2) playedsound = "misc/EBFoeDie";
 											if (lm_q3aqckillsoundtype >= 0) 
 											{
 												victim.A_StopSound(12);
@@ -393,7 +400,7 @@ class LM_EventHandler : EventHandler
 											}
 										}
 										else
-										if (!othermon.bFRIENDLY && !victim.bFRIENDLY && lm_hitsoundsmisc >= 0)
+										if (!othermon.bFRIENDLY && !victim.bFRIENDLY)
 										{
 											double rndpitch = frandom(0.334,1.0);
 											if (random(1,2) <= 1 && rndpitch > 0.00) rndpitch = (1.00 / rndpitch);
@@ -447,6 +454,7 @@ class LM_EventHandler : EventHandler
 									{
 										if (lm_q3aqchitsoundtype == 0) playedsound = "misc/hit";
 										if (lm_q3aqchitsoundtype == 1) playedsound = "misc/hitpunch";
+										if (lm_q3aqchitsoundtype == 2) playedsound = "misc/EBFoeHit";
 										if (lm_q3aqchitsoundtype >= 0) 
 										{
 											victim.A_StopSound(13);
@@ -465,6 +473,7 @@ class LM_EventHandler : EventHandler
 										{
 											if (lm_q3aqchitsoundtype == 0) playedsound = "misc/hit2";
 											if (lm_q3aqchitsoundtype == 1) playedsound = "misc/hitpunch2";
+											if (lm_q3aqchitsoundtype == 2) playedsound = "misc/EBFoeHit";
 											if (lm_q3aqchitsoundtype >= 0) 
 											{
 												victim.A_StopSound(13);
@@ -472,7 +481,7 @@ class LM_EventHandler : EventHandler
 											}
 										}
 										else
-										if (!othermon.bFRIENDLY && !victim.bFRIENDLY && lm_hitsoundsmisc >= 0)
+										if (!othermon.bFRIENDLY && !victim.bFRIENDLY)
 										{
 											double rndpitch = frandom(0.50,1.00);
 											if (random(1,2) <= 1 && rndpitch > 0.00) rndpitch = (1.00 / rndpitch);

@@ -1,3 +1,5 @@
+server nosave int lm_enabledisableall = 1;
+
 server nosave int lm_combatlog = 1;
 server nosave int lm_playerdmglog = 1;
 
@@ -10,7 +12,6 @@ server nosave float lm_q3aqckillsoundvol = 1.0;
 server nosave int lm_q3aqchitsoundtype = 0;
 server nosave int lm_q3aqchitsounddelay = 8;
 server nosave int lm_q3aqckillsoundtype = 0;
-server nosave int lm_hitweaksounds = 1;
 server nosave int lm_hitweaksounddelay = 8;
 server nosave float lm_hitweaksoundvol = 1.0;
 server nosave float lm_monsternodmgvol = 1.0;

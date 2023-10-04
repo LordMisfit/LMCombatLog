@@ -2,12 +2,20 @@ OptionValue "OTHER_HitSoundType"
 {
 	0, "Quake 3/Arena Style [DEFAULT]"
 	1, "Punch'd"
+	2, "Earthbound"
 }
 
 OptionValue "OTHER_KillSoundType"
 {
 	0, "Quake 3/Arena Style [DEFAULT]"
 	1, "'DED'"
+	2, "Earthbound"
+}
+
+OptionValue "EnDisAbled_DefaultEnabled"
+{
+	0, "Disabled"
+	1, "Enabled [DEFAULT]"
 }
 
 OptionValue "YesNo_DefaultYes"
@@ -48,6 +56,9 @@ OptionMenu "LMCOptions"
 	IfGame(Heretic, Hexen) { Position -88 } 
 	IfGame(Strife) { Position -88 }
 	
+	LMOption "Enable/Disable All",		"To Quickly Enable/Disable the CombatLog and HitSounds Fully. WARNING: If 'Aetherius', 'Explosive Expedition' or 'Kampoulchhr' are loaded, this option has -NO- effect on -THEIR- combatlog and hitsound options. You'll have to set those in their own mod menus. :P",		"lm_enabledisableall",			"EnDisAbled_DefaultEnabled"
+	StaticText " "
+	StaticText " "
 	LMOption "Combat Logs [non-player]",		"Outputs damage messages to the console when non-player monsters take damage. Default: On",		"lm_combatlog",			"OnOff_DefaultOn"
 	LMOption "Damage Logs [Player]",		"Outputs damage messages to the console the player takes damage [or is hit while invulnerable]. Default: On",		"lm_playerdmglog",			"OnOff_DefaultOn"
 	StaticText " "
@@ -61,12 +72,10 @@ OptionMenu "LMCOptions"
 	LMTextfield "Hit Sound Volume [x]",		"The volume factor for Hit Sounds. Default: 1[x]",		"lm_q3aqchitsoundvol"
 	LMTextfield "Kill Sound Volume [x]",		"The volume factor for Kill Sounds. Default: 1[x]",		"lm_q3aqckillsoundvol"
 	StaticText " "
-	LMOption "Hit Sounds (Infighting) [Monsters]",		"If [Yes], sounds are played when an enemy is damaged by another enemy, Quake 3 Arena/Quake Champions Style. Default: Yes.",		"lm_hitsoundsmisc",      "YesNo_DefaultYes"
-	LMTextfield "Hit Sound Volume [Monsters] [x]",		"The volume factor for Hit Sounds between enemies. Default: 1[x]",		"lm_hitsoundsvol"
+	LMTextfield "Hit Sound (Infighting) Volume [Monsters] [x]",		"The volume factor for Hit Sounds between enemies. Default: 1[x]",		"lm_hitsoundsvol"
 	StaticText " "
-	LMOption "Hit Weakness Sounds",		"If set, monsters emit special sounds if you hit them with attacks they are weak or strong against, in order to hint you of what you should or shouldn't use against them.",		"lm_hitweaksounds",		"YesNo_DefaultYes"
-	LMTextfield "Hit Weakness Sound Delay [per monster in tics]",		"The value in tics of how long it takes for Weakness/Resistance Hit sounds to replay again on the same monster [if applicable]. Higher values reduce noise pollution when a monster is taking a lot of hits in short order.. Default: 8 [tics]",		"lm_hitweaksounddelay"
 	LMTextfield "Hit Weakness Sound Volume",		"The volume factor for Weakness/Resistance Hit Sounds. Default: 1[x]",		"lm_hitweaksoundvol"
+	LMTextfield "Hit Weakness Sound Delay [per monster in tics]",		"The value in tics of how long it takes for Weakness/Resistance Hit sounds to replay again on the same monster [if applicable]. Higher values reduce noise pollution when a monster is taking a lot of hits in short order.. Default: 8 [tics]",		"lm_hitweaksounddelay"
 	StaticText " "
 	LMTextfield "No Damage Sound Volume (Monster) [x]",		"The volume factor for the 'no damage taken' sound for monsters. Default: 1[x]",		"lm_monsternodmgvol"
 }

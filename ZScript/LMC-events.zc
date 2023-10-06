@@ -504,7 +504,7 @@ class LM_EventHandler : EventHandler
 	
 	override void WorldThingRevived(WorldEvent e)
 	{
-		if (!A_CheckLMMods())
+		if (!A_CheckLMMods() && lm_resurrectmsgs)
 		{
 			if (Level.MapName != "TITLEMAP")
 			{

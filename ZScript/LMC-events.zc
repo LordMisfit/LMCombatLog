@@ -520,7 +520,7 @@ class LM_EventHandler : EventHandler
 						if (spawnee.bBOSS) sndname = "Resurrection/EvilBig";
 					}
 					spawnee.A_StopSound(15);
-					spawnee.A_StartSound(sndname,15,CHANF_DEFAULT,frandom(0.8,1.2),ATTN_NONE,frandom(0.8,1.2));
+					spawnee.A_StartSound(sndname,15,CHANF_DEFAULT,(lm_ressoundsvol * frandom(0.8,1.2)),ATTN_NONE,frandom(0.8,1.2));
 					Console.Printf("\c[red]*\c- \c[purple]%s\c[red] has resurrected!\c-", spawnee.GetTag());
 				}
 			}

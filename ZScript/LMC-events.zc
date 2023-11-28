@@ -94,7 +94,7 @@ class LM_EventHandler : EventHandler
 					if (!victim.GetTag()) victname = vict;
 					if (source)
 					{
-						if (PlayerPawn(source))
+						if (PlayerPawn(source) && source.player)
 						{
 							attkernam = source.player.GetUserName();
 						}

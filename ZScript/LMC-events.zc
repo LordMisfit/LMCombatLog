@@ -94,26 +94,30 @@ class LM_EventHandler : EventHandler
 					if (!victim.GetTag()) victname = vict;
 					if (source)
 					{
-						if (PlayerPawn(source) && source.player)
+						if (PlayerPawn(source))
 						{
-							attkernam = source.player.GetUserName();
+							if (source.player) attkernam = source.player.GetUserName();
+														else attkernam = "????";
 						}
 						else
 						{
 							if (source.GetTag()) attkernam = source.GetTag();
-															else attkernam = source.GetClassName();
+							else if (source.GetClassName()) attkernam = source.GetClassName();
+							else attkernam = "??!?";
 						}
 					}
 					if (inflicter)
 					{
 						if (PlayerPawn(inflicter))
 						{
-							atkrname = inflicter.player.GetUserName();
+							if (inflicter.player) attkernam = inflicter.player.GetUserName();
+															 else attkernam = "????";
 						}
 						else
 						{
 							if (inflicter.GetTag()) atkrname = inflicter.GetTag();
-																 else atkrname = inflicter.GetClassName();
+							else if (inflicter.GetClassName()) atkrname = inflicter.GetClassName();
+							else atkrname = "????";
 						}
 					}
 					string comblog = "";

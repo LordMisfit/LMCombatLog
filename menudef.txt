@@ -81,6 +81,6 @@ OptionMenu "LMCOptions"
 	LMTextfield "Hit Weakness Sound Delay [per monster in tics]",		"The value in tics of how long it takes for Weakness/Resistance Hit sounds to replay again on the same monster [if applicable]. Higher values reduce noise pollution when a monster is taking a lot of hits in short order.. Default: 8 [tics]",		"lm_hitweaksounddelay"
 	StaticText " "
 	LMTextfield "No Damage Sound Volume (Monster) [x]",		"The volume factor for the 'no damage taken' sound for monsters. Default: 1[x]",		"lm_monsternodmgvol"
-	LMTextfield "No Damage Sound Volume (Player) [x]",		"The volume factor for the 'no damage taken' sound for monsters. Default: 1[x]",		"lm_playernodmgvol"
+	LMTextfield "No Damage Sound Volume (Player) [x]",		"The volume factor for the 'no damage taken' sound for players. Default: 1[x]",		"lm_playernodmgvol"
 }
 

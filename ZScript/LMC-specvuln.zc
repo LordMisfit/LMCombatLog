@@ -71,12 +71,12 @@ class LMC_CompatVulnItem : CustomInventory
 					}
 					if (isinvuln)
 					{
-						owner.A_StartSound("Player/TookNoDamageInvuln",199,CHANF_DEFAULT,frandom(0.5,0.75),ATTN_NORM);
+						owner.A_StartSound("Player/TookNoDamageInvuln",199,CHANF_DEFAULT,(frandom(0.5,0.75) * lm_playernodmgvol),ATTN_NORM);
 					}
 					else
 					{
-						if (PlayerPawn(owner)) owner.A_StartSound("Player/TookNoDamage",199,CHANF_DEFAULT,frandom(0.5,0.75),ATTN_NORM);
-															else owner.A_StartSound("misc/hitnodmg",199,CHANF_DEFAULT,frandom(0.5,0.75),ATTN_NORM);
+						if (PlayerPawn(owner)) owner.A_StartSound("Player/TookNoDamage",199,CHANF_DEFAULT,(frandom(0.5,0.75) * lm_playernodmgvol),ATTN_NORM);
+															else owner.A_StartSound("misc/hitnodmg",199,CHANF_DEFAULT,(frandom(0.5,0.75) * lm_playernodmgvol),ATTN_NORM);
 					}
 				}
 			}

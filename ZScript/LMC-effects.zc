@@ -59,3 +59,182 @@ class LMC_TempNoHitSound : CustomInventory
 		Super.Tick();
 	}
 }
+
+
+class CLArmor : BasicArmor
+{
+	Default
+	{
+		Inventory.Amount 0;
+		+Inventory.KEEPDEPLETED
+	}
+	
+	override void Tick()
+	{
+		Armor.Tick();
+		AbsorbCount = 0;
+		if (!Icon.isValid())
+		{
+			String icontex = gameinfo.ArmorIcon1;
+
+			if (SavePercent >= gameinfo.Armor2Percent && gameinfo.ArmorIcon2.Length() != 0)
+				icontex = gameinfo.ArmorIcon2;
+
+			if (icontex.Length() != 0)
+				Icon = TexMan.CheckForTexture (icontex, TexMan.TYPE_Any);
+		}
+	}
+	
+	override Inventory CreateCopy (Actor other)
+	{
+		// BasicArmor that is in use is stored in the inventory as BasicArmor.
+		// BasicArmor that is in reserve is not.
+		let copy = CLArmor(Spawn("CLArmor"));
+		copy.SavePercent = SavePercent != 0 ? SavePercent : 0.00001;	// slightly more than 1/3 to avoid roundoff errors.
+		copy.Amount = Amount;
+		copy.MaxAmount = MaxAmount;
+		copy.Icon = Icon;
+		copy.BonusCount = BonusCount;
+		copy.ArmorType = ArmorType;
+		copy.ActualSaveAmount = ActualSaveAmount;
+		GoAwayAndDie();
+		return copy;
+	}
+	
+	override bool HandlePickup(Inventory item)
+	{
+		return item.GetClass() == 'CLArmor';
+	}
+	
+	override void AbsorbDamage (int damage, Name damageType, out int newdamage, Actor inflictor, Actor source, int flags)
+	{
+		//Console.Printf("CLArmor - AbsorbDamage: %d", damage);
+		int saved;
+		double initSavePercent = SavePercent;
+		
+		int full = MAX(0, MaxFullAbsorb - AbsorbCount);
+		
+		if (damage < full)
+		{
+			saved = damage;
+		}
+		else
+		{
+			saved = full + int((damage - full) * SavePercent);
+			if (MaxAbsorb > 0 && saved + AbsorbCount > MaxAbsorb) 
+			{
+				saved = MAX(0,  MaxAbsorb - AbsorbCount);
+			}
+		}
+		
+		int firstsaved = saved;
+		
+		int oldsaved = saved;
+		double savebase = 0.0;
+		saved *= (1.0 - savebase);
+		
+		if (Amount < saved)
+		{
+			saved = Amount;
+		}
+		newdamage -= firstsaved;
+		Amount -= saved;
+		AbsorbCount += saved;
+		if (Amount == 0)
+		{
+			// The armor has become useless
+			SavePercent = 0;
+			ArmorType = 'None'; // Not NAME_BasicArmor.
+			// Now see if the player has some more armor in their inventory
+			// and use it if so. As in Strife, the best armor is used up first.
+			CLArmorPickup best = null;
+			Inventory probe = Owner.Inv;
+			while (probe != null)
+			{
+				let inInv = CLArmorPickup(probe);
+				if (inInv != null)
+				{
+					if (best == null || best.SavePercent < inInv.SavePercent)
+					{
+						best = inInv;
+					}
+				}
+				probe = probe.Inv;
+			}
+			if (best != null)
+			{
+				Owner.UseInventory(best);
+			}
+		}
+		damage = newdamage;
+	}
+}
+class CLArmorPickup : BasicArmorPickup
+{
+	int A_CheckMaxArmor(int SaveAmount) // CLArmorPickup
+	{
+		actor playera = players[0].mo;
+		return SaveAmount;
+	}
+	
+	override Inventory CreateCopy (Actor other)
+	{
+		let copy = CLArmorPickup(Super.CreateCopy (other));
+		copy.SavePercent = SavePercent;
+		copy.SaveAmount = SaveAmount;
+		copy.MaxAbsorb = MaxAbsorb;
+		copy.MaxFullAbsorb = MaxFullAbsorb;
+
+		return copy;
+	}
+
+	override bool Use (bool pickup)
+	{
+		name armorclasstype = "CLArmor";
+
+		int SaveAmount = GetSaveAmount();
+		let armor = CLArmor(Owner.FindInventory(armorclasstype));
+
+		// This should really never happen but let's be prepared for a broken inventory.
+		if (armor == null)
+		{
+			armor = CLArmor(Spawn(armorclasstype));
+			armor.BecomeItem ();
+			Owner.AddInventory (armor);
+		}
+		else
+		{
+			// If you already have more armor than this item gives you, you can't
+			// use it.
+			if (armor.Amount >= SaveAmount + armor.BonusCount)
+			{
+				return false;
+			}
+			// Don't use it if you're picking it up and already have some.
+			if (pickup && armor.Amount > 0 && MaxAmount > 0)
+			{
+				return false;
+			}
+		}
+		
+		armor.SavePercent = clamp(SavePercent, 0, 100) / 100;
+		armor.Amount = SaveAmount + armor.BonusCount;
+		armor.MaxAmount = SaveAmount;
+		armor.Icon = Icon;
+		armor.MaxAbsorb = MaxAbsorb;
+		armor.MaxFullAbsorb = MaxFullAbsorb;
+		armor.ArmorType = GetClassName();
+		armor.ActualSaveAmount = SaveAmount;
+		return true;
+	}
+	
+	override void SetGiveAmount(Actor receiver, int amount, bool bycheat)
+	{
+		SaveAmount *= amount;
+	}
+	
+	int GetSaveAmount ()
+	{
+		return !bIgnoreSkill ? int(SaveAmount * G_SkillPropertyFloat(SKILLP_ArmorFactor)) : SaveAmount;
+	}
+}

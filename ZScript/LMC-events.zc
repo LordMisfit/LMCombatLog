@@ -32,6 +32,7 @@ class LM_EventHandler : EventHandler
 				if (PlayerPawn(spawnee) || (spawnee.bISMONSTER || spawnee.bSHOOTABLE))
 				{
 					spawnee.A_SetInventory("LMC_CompatVulnItem",1);
+					spawnee.A_SetInventory("CLArmor",1);
 					if (lmdebug_set1) Console.Printf("LMC_CompatVulnItem [%p - %s]", spawnee, spawnee.GetClassName());
 				}
 			}

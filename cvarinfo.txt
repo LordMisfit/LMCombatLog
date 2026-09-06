@@ -18,6 +18,7 @@ server nosave float lm_monsternodmgvol = 1.0;
 server nosave int lm_hitsoundsmisc = 1;
 server nosave int lm_hitsoundsdelay = 8;
 server nosave float lm_hitsoundsvol = 1.0;
+server nosave float lm_killsoundsvol = 1.0;
 
 server nosave float lm_ressoundsvol = 1.0;
 server nosave int lm_resurrectmsgs = 1;

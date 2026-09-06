@@ -413,7 +413,7 @@ class LM_EventHandler : EventHandler
 											playedsound = "misc/killinfight"; //"misc/killsndduck";
 											if (lmdebug_hitsounds) Console.Printf("[deathsound ('%s': %.8f)] othermon: %s kills %s (full infighting)", playedsound, rndpitch, othermon.GetClassName(), victim.GetClassName());
 											victim.A_StopSound(12);
-											victim.A_StartSound(playedsound, 12, CHANF_DEFAULT, (lm_q3aqckillsoundvol * frandompick(1.5,2.5)), ATTN_NONE, rndpitch);
+											victim.A_StartSound(playedsound, 12, CHANF_DEFAULT, (lm_killsoundsvol * frandompick(1.5,2.5)), ATTN_NONE, rndpitch);
 										}
 									}
 								}

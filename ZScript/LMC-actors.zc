@@ -1,0 +1,152 @@
+class LMCBaseZSC : Actor abstract
+{
+	// General
+	const SKILL_VERY_EASY = 0;
+	const SKILL_EASY = 1;
+	const SKILL_NORMAL = 2;
+	const SKILL_HARD = 3;
+	const SKILL_VERY_HARD = 4;
+	const SKILL_EXTREME = 5;
+	const SKILL_HORRIBLE = 6;
+	const SKILL_IMPOSSIBLE = 7;
+	const SKILL_OMEGA = 8;
+}
+
+class LMCCreature : LMCBaseZSC abstract
+{
+	int targetdummyhitcooldown;
+	
+	void A_LMCHealThing(int healvalue = 0, int healtarget = 0, int silentheal = 0)
+	{
+		if (healvalue > 0)
+		{
+			health += healvalue;
+			if (health > healtarget) health = healtarget;
+		}
+		if (silentheal)
+		{
+			//if (CountInv("DamageTracker")) A_SetInventory("SilentHeal",1);
+		}
+	}
+}
+
+// Practice Target
+class LMCPracticeTarget : LMCCreature
+{
+	default
+	{
+		Tag "Practicing Target";
+		//$Angled
+		//$Color 6
+		//$Category KC Monsters
+		//$Sprite "PRDUA0"
+		Radius 16;
+		Height 48;
+		Health 10000000;
+		Mass 275000000;
+		PainChance 255;
+		
+		Scale 0.4325; // 0.25
+		
+		+ISMONSTER;
+		+SHOOTABLE;
+		+NOBLOOD;
+		+FORCEYBILLBOARD;
+		+NEVERTARGET;
+		+NOPAIN;
+		-SOLID;
+		-COUNTKILL;
+	}
+	
+	States
+	{
+		Spawn:
+			PRDU A 0 NoDelay Bright
+			{
+				targetdummyhitcooldown = -1;
+			}
+		See:
+			PRDU A 1 
+			{
+				if (targetdummyhitcooldown > 0) 
+				{
+					targetdummyhitcooldown--;
+					//Console.Printf("targetdummyhitcooldown: %d", targetdummyhitcooldown);
+				}
+				if (targetdummyhitcooldown == 0) 
+				{
+					int oldhealth = health;
+					A_LMCHealThing(10000000, SpawnHealth(), 1);
+					string dps = "";
+					dps.AppendFormat("\c[brick]DPS:\c- \c[gold]%d\c- / sec", abs(oldhealth-health));
+					A_PrintBold(dps);
+					targetdummyhitcooldown--;
+				}
+			}
+			Loop;
+		Pain: goto See;
+		Death:
+			TNT1 A -1 A_SpawnItemEx("LMCPracticeTarget", 0, 0, 0, 0, 0, 0, 0, SXF_NOCHECKPOSITION);
+			Stop;
+	}
+}
+
+class LMCPracticeTarget2 : LMCCreature
+{
+	default
+	{
+		Tag "Practicing Target";
+		//$Angled
+		//$Color 6
+		//$Category KC Monsters
+		//$Sprite "PRDUA0"
+		Radius 16;
+		Height 48;
+		Health 10000000;
+		Mass 275000000;
+		PainChance 255;
+		
+		Scale 0.4325; // 0.25
+		
+		+ISMONSTER;
+		+SHOOTABLE;
+		+NOBLOOD;
+		+FORCEYBILLBOARD;
+		+NEVERTARGET;
+		+NOPAIN;
+		+SOLID;
+		-COUNTKILL;
+	}
+	
+	States
+	{
+		Spawn:
+			PRDU A 0 NoDelay Bright
+			{
+				targetdummyhitcooldown = -1;
+			}
+		See:
+			PRDU A 1
+			{
+				if (targetdummyhitcooldown > 0) 
+				{
+					targetdummyhitcooldown--;
+					//Console.Printf("targetdummyhitcooldown: %d", targetdummyhitcooldown);
+				}
+				if (targetdummyhitcooldown == 0) 
+				{
+					int oldhealth = health;
+					A_LMCHealThing(10000000, SpawnHealth(), 1);
+					string dps = "";
+					dps.AppendFormat("\c[brick]DPS:\c- \c[gold]%d\c- / sec", abs(oldhealth-health));
+					A_PrintBold(dps);
+					targetdummyhitcooldown--;
+				}
+			}
+			Loop;
+		Pain: goto See;
+		Death:
+			TNT1 A -1 A_SpawnItemEx("LMCPracticeTarget2", 0, 0, 0, 0, 0, 0, 0, SXF_NOCHECKPOSITION);
+			Stop;
+	}
+}
